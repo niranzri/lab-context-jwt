@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require('jsonwebtoken')
 const User = require("../models/User.model");
+const { isAuthenticated } = require('../middlewares/isAuthenticated')
 
 const router = require('express').Router()
 
@@ -67,6 +68,7 @@ router.post('/login', async (req, res) => {
             expiresIn: '6h'
           }
         )
+        res.setHeader('Content-Type', 'application/json');
         res.status(200).json({ authToken: authToken })
       } else {
         res.status(403).json({ message: 'Incorrect password or email' })
@@ -80,9 +82,12 @@ router.post('/login', async (req, res) => {
   }
 })
 
-router.get('/verify', (req, res, next) => {
-  // You need to use the middleware there, if the request passes the middleware, it means your token is good
-  res.json('Pinging verify')
+
+router.get('/verify', isAuthenticated, async (req, res) => {
+  console.log(req.tokenPayload)
+  const currentUser = await User.findById(req.tokenPayload.userId)
+  res.status(200).json(currentUser)
 })
+
 
 module.exports = router
