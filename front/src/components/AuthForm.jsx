@@ -14,8 +14,10 @@ const AuthForm = ( {isLogin = false } ) => {
     // Connect frontend to backend
     const handleSubmit = async event => {
         event.preventDefault()
+        // requested body with user's e-mail and password
         const credentials = { email, password }
         try {
+          // POST request with the user's credentials to the server, so that the backend can use them.
           const response = await fetch(
             `${import.meta.env.VITE_API_URL}/auth/${isLogin ? 'login' : 'signup'}`,
             {
@@ -23,6 +25,7 @@ const AuthForm = ( {isLogin = false } ) => {
               headers: {
                 'Content-Type': 'application/json',
               },
+              // The body is a JSON-formatted string, send as the body of the request
               body: JSON.stringify(credentials),
             }
           )
