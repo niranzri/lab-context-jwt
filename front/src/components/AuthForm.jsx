@@ -9,7 +9,7 @@ const AuthForm = ( {isLogin = false } ) => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
 
-    const { setToken } = useContext(AuthContext);
+    const { saveToken } = useContext(AuthContext);
 
     // Connect frontend to backend
     const handleSubmit = async event => {
@@ -32,10 +32,9 @@ const AuthForm = ( {isLogin = false } ) => {
           
           if (response.status === 200) {
             const parsed = await response.json()
-            console.log(parsed.token)
-            setToken(parsed.token)
-           // saveToken(parsed.token)
-           // navigate('/profile')
+            console.log(parsed.authToken)
+            saveToken(parsed.authToken)
+            navigate('/profile')
           } 
         } catch (error) {
           console.error(error)

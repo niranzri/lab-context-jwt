@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage'
 import ProfilePage from './pages/ProfilePage'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
+import PrivateRoute from './components/PrivateRoute'
 
 function App() {
   return (
@@ -32,10 +33,12 @@ function App() {
     >
       <Routes>
         <Route path='/' element={<HomePage />} />
-        <Route path='/profile' element={<ProfilePage />} />
+        <Route path='/profile' element={
+          <PrivateRoute>
+            <ProfilePage />
+          </PrivateRoute>} />
         <Route path='/signup' element={<SignupPage />} />
         <Route path='/login' element={<LoginPage />} />
-        {/* Add some new route(s) on what you want to work, don't forget to make a PrivateRoute component */}
       </Routes>
     </AppShell>
   )

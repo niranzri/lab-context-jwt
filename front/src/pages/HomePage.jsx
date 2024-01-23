@@ -13,13 +13,12 @@ const HomePage = () => {
       }}
     >
       <Text size='xl' weight='bold' align='center'>
-       Unicorn love
+       This is a site about unicorns
       </Text>
       <Image
         src={unicorn}  // Replace with the actual path to your image
         alt='Unicorn Image'
-        width={400}
-        height={400}
+        width={600}
         style={{ marginTop: '16px' }} // Adjust styling as needed
       />
     </Box>

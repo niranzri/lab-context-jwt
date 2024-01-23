@@ -14,11 +14,18 @@ const AuthContextProvider = ( {children} ) => {
     // recording token to state and local storage
     const saveToken = tokenFromLogin => {
         setToken(tokenFromLogin)
+        setIsAuthenticated(true)
         window.localStorage.setItem('authToken', tokenFromLogin)
-      }
+    }
+    
+    const logout = () => {
+        setToken()
+        setIsAuthenticated(false)
+        window.localStorage.removeItem('authToken')
+    }
 
-      // we make a request to see if we are verified - we pass the token to our backend route
-      const verifyToken = async tokenToVerify => {
+    // makes a request to see if we are verified - we pass the token to our backend route
+    const verifyToken = async tokenToVerify => {
         try {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/verify`, {
               headers: {
@@ -34,13 +41,13 @@ const AuthContextProvider = ( {children} ) => {
               throw new Error('Invalid Token') 
               // add a react-toastify notification to tell the user to authenticate again
             }
-          } catch (error) {
+        } catch (error) {
             setIsLoading(false)
             window.localStorage.removeItem('authToken')
-          }
-      }
+        }
+    }
 
-      useEffect(() => {
+    useEffect(() => {
         const tokenFromLS = window.localStorage.getItem('authToken')
         if (tokenFromLS) {
           verifyToken(tokenFromLS)
@@ -50,10 +57,29 @@ const AuthContextProvider = ( {children} ) => {
         } else {
           setIsLoading(false)
         }
-      }, [])
+    }, [])
+
+    /* Function to use for protected API endppoints  
+    reuses a token so that we don't have to use the verify route all the time
+    we need the token. */
+    const fetchWithToken = async (endpoint, method = 'GET', payload) => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api${endpoint}`, {
+                method,
+                headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+        })
+        return response
+        } catch (error) {
+            console.error('Something went wrong with the fetchWithToken', error)
+        }
+    }
 
     return (
-        <AuthContext.Provider value={{ saveToken, isLoading, isAuthenticated }}>
+        <AuthContext.Provider value={{ isLoading, isAuthenticated, logout, saveToken, fetchWithToken }}>
         {children}
         </AuthContext.Provider>
     )
