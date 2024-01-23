@@ -11,20 +11,23 @@ const AuthContextProvider = ( {children} ) => {
     // with Mantine's local storage hook:
     // const [tokenFromLS, setTokenFromLS] = useLocalStorage({key: 'authToken'})
 
-    // recording token to state and local storage
+    // Records token to state (setToken) and local storage
     const saveToken = tokenFromLogin => {
         setToken(tokenFromLogin)
         setIsAuthenticated(true)
+        // key set to 'authToken' here
         window.localStorage.setItem('authToken', tokenFromLogin)
     }
     
+    // Clears the token from the state and local storage
     const logout = () => {
         setToken()
         setIsAuthenticated(false)
         window.localStorage.removeItem('authToken')
     }
 
-    // makes a request to see if we are verified - we pass the token to our backend route
+    // makes a request to the server (with the fetch API) verify the token.
+    // the URL of the server is obtained from the envrionment variable VITE_API_URL
     const verifyToken = async tokenToVerify => {
         try {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/verify`, {
@@ -47,13 +50,12 @@ const AuthContextProvider = ( {children} ) => {
         }
     }
 
+    // checks if there is a token in the local storage.
+    // If there is a token, the verifyToken function is called to verify the token.
     useEffect(() => {
         const tokenFromLS = window.localStorage.getItem('authToken')
         if (tokenFromLS) {
           verifyToken(tokenFromLS)
-          //setToken(tokenFromLS) 
-          /* if we have a token in LS we set the token to the value of the LS token
-          but we need to also check if we are authenticated! */
         } else {
           setIsLoading(false)
         }
